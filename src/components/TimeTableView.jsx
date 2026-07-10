@@ -6,6 +6,8 @@ import { todayKey } from '../utils/dateUtils'
 import { dayStats } from '../utils/stats'
 import TimeTableModal from './TimeTableModal'
 import GridSlotModal from './GridSlotModal'
+import customHeaderImg from '../assets/custom-header.png'
+import dailyGoalBearImg from '../assets/daily-goal-bear.png'
 import { Sparkles, Plus, X, Search, SlidersHorizontal, User } from 'lucide-react'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -118,7 +120,7 @@ export default function TimeTableView({ onBack }) {
                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
              </button>
              <div className="flex items-center gap-1.5">
-                <img src="/custom-header.png" alt="Cute Bear" className="w-12 h-12 object-contain" />
+                <img src={customHeaderImg} alt="Cute Bear" className="w-12 h-12 object-contain" />
                 <h1 className="font-display text-[20px] font-extrabold tracking-tight text-[#1E293B] flex items-center gap-1.5 -ml-1">
                   My Timetable <NotoEmoji code="1f496" className="w-4 h-4" />
                 </h1>
@@ -297,7 +299,7 @@ export default function TimeTableView({ onBack }) {
 
            {/* Custom Scene from User */}
            <div className="absolute right-[-10px] bottom-[-2px] w-[130px] h-full pointer-events-none flex items-end justify-end overflow-visible">
-              <img src="/daily-goal-bear.png" alt="Bear Reading" className="w-full h-[140%] object-contain origin-bottom-right drop-shadow-sm" />
+              <img src={dailyGoalBearImg} alt="Bear Reading" className="w-full h-[140%] object-contain origin-bottom-right drop-shadow-sm" />
            </div>
          </div>
       </div>
