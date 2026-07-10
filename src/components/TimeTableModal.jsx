@@ -100,12 +100,12 @@ export default function TimeTableModal({ open, onClose, onSave, initial, dayInde
                   <button
                     key={c.id}
                     onClick={() => setCategory(c.id)}
-                    className="rounded-full px-3.5 py-2 text-[12px] font-bold transition-all active:scale-95"
-                    style={{
-                      backgroundColor: category === c.id ? c.color : `${c.color}15`,
-                      color: category === c.id ? '#FFFFFF' : c.color,
-                      border: `1px solid ${category === c.id ? c.color : 'transparent'}`,
-                    }}
+                    className={`rounded-full px-4 py-2 text-[12px] font-bold transition-all active:scale-95 border ${
+                      category === c.id 
+                        ? 'shadow-sm border-slate-300' 
+                        : 'bg-slate-50 text-slate-500 border-slate-200 hover:bg-slate-100'
+                    }`}
+                    style={category === c.id ? { backgroundColor: c.color, color: '#0F172A' } : undefined}
                   >
                     {c.label === 'Other' && category === 'other' ? '+ Add Subject' : c.label}
                   </button>
