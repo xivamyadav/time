@@ -46,25 +46,25 @@ function getSubjectProps(catId) {
 }
 
 export default function TimeTableView({ onBack }) {
-  const { currentDayIndex, DATES } = useMemo(() => {
-    const d = new Date()
-    const day = d.getDay()
-    const currentDayIndex = day === 0 ? 6 : day - 1
-    
-    const monday = new Date(d)
-    monday.setDate(d.getDate() - currentDayIndex)
-    
-    const dates = Array.from({ length: 7 }).map((_, i) => {
-      const date = new Date(monday)
-      date.setDate(monday.getDate() + i)
-      const dayNum = date.getDate()
-      const monthStr = date.toLocaleString('en-US', { month: 'short' })
-      return `${dayNum} ${monthStr}`
+  const upcomingDates = useMemo(() => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    return Array.from({ length: 30 }).map((_, i) => {
+      const d = new Date(today)
+      d.setDate(today.getDate() + i)
+      return {
+        key: d.getTime(),
+        dayName: d.toLocaleDateString('en-US', { weekday: 'short' }),
+        dateNum: d.getDate(),
+        monthName: d.toLocaleDateString('en-US', { month: 'short' }),
+        dayIndex: d.getDay() === 0 ? 6 : d.getDay() - 1,
+      }
     })
-    return { currentDayIndex, DATES: dates }
   }, [])
 
-  const [selectedDay, setSelectedDay] = useState(currentDayIndex)
+  const [selectedDateKey, setSelectedDateKey] = useState(upcomingDates[0].key)
+  const selectedDateItem = upcomingDates.find(d => d.key === selectedDateKey) || upcomingDates[0]
+  const selectedDay = selectedDateItem.dayIndex
   const [timetable, setTimetable] = useState([])
   const [modalOpen, setModalOpen] = useState(false)
   const [categories, setCategories] = useState([])
@@ -165,13 +165,18 @@ export default function TimeTableView({ onBack }) {
       </div>
 
       <div className="flex-1 overflow-hidden flex flex-col relative px-4 pb-2">
-        <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 mb-6 flex justify-between p-2">
-          {DAYS.map((day, dIdx) => {
-            const isSelected = dIdx === selectedDay
+        <div className="mb-6 -mx-4 px-4 overflow-x-auto hide-scrollbar flex gap-3 snap-x">
+          {upcomingDates.map((item) => {
+            const isSelected = item.key === selectedDateKey
             return (
-              <div key={day} onClick={() => setSelectedDay(dIdx)} className={`cursor-pointer flex flex-col items-center justify-center px-4 py-2.5 rounded-[18px] transition-all ${isSelected ? 'bg-[#8B7CF6] shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}>
-                <span className={`text-[13px] font-bold ${isSelected ? 'text-white' : 'text-slate-700'}`}>{day}</span>
-                <span className={`text-[11px] font-medium ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>{DATES[dIdx]}</span>
+              <div 
+                key={item.key} 
+                onClick={() => setSelectedDateKey(item.key)} 
+                className={`shrink-0 snap-center cursor-pointer flex flex-col items-center justify-center w-[60px] py-3 rounded-full transition-all border ${isSelected ? 'bg-[#8B7CF6] shadow-[0_8px_16px_rgba(139,124,246,0.3)] border-transparent transform scale-105' : 'bg-white text-slate-500 border-slate-200 hover:bg-slate-50 shadow-sm'}`}
+              >
+                <span className={`text-[11px] font-bold uppercase mb-1 ${isSelected ? 'text-white/90' : 'text-slate-400'}`}>{item.dayName}</span>
+                <span className={`text-[20px] font-extrabold leading-none mb-1 ${isSelected ? 'text-white' : 'text-slate-700'}`}>{item.dateNum}</span>
+                <span className={`text-[10px] font-medium ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>{item.monthName}</span>
               </div>
             )
           })}
@@ -185,7 +190,9 @@ export default function TimeTableView({ onBack }) {
                   <span className="text-[12px] font-medium text-slate-400">Time</span>
                 </div>
                 <div className="flex-1 min-w-[110px] py-4 flex items-center justify-center border-r border-transparent">
-                  <span className={`text-[14px] font-bold ${selectedDay === 5 ? 'text-blue-400' : selectedDay === 6 ? 'text-rose-400' : 'text-[#1E293B]'}`}>{DAYS[selectedDay]}</span>
+                  <span className={`text-[14px] font-bold ${selectedDay === 5 ? 'text-blue-400' : selectedDay === 6 ? 'text-rose-400' : 'text-[#1E293B]'}`}>
+                    {selectedDateItem.dayName}, {selectedDateItem.dateNum} {selectedDateItem.monthName}
+                  </span>
                 </div>
               </div>
 
