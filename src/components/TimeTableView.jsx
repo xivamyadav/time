@@ -145,15 +145,9 @@ export default function TimeTableView({ onBack }) {
              </div>
            </div>
            
-           <div className="flex items-center gap-2 shrink-0">
-             <button className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm border border-slate-100 text-slate-600">
-               <Search className="w-4 h-4" />
-             </button>
-             <button className="w-9 h-9 flex items-center justify-center rounded-full bg-white shadow-sm border border-slate-100 text-slate-600">
-               <SlidersHorizontal className="w-4 h-4" />
-             </button>
-             <div className="w-9 h-9 flex items-center justify-center rounded-full bg-pink-50 border border-pink-100">
-               <NotoEmoji code="1f430" className="w-5 h-5" />
+           <div className="flex items-center shrink-0">
+             <div className="w-12 h-12 flex items-center justify-center rounded-full bg-pink-50 border-2 border-pink-100 shadow-sm transition-transform hover:scale-105 cursor-pointer">
+               <NotoEmoji code="1f430" className="w-7 h-7 drop-shadow-sm" />
              </div>
            </div>
         </div>
