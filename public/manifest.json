@@ -1,0 +1,15 @@
+{
+  "name": "My Timetable",
+  "short_name": "My Timetable",
+  "start_url": "/time/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192 512x512",
+      "type": "image/png"
+    }
+  ]
+}
