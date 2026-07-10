@@ -11,7 +11,6 @@ import dailyGoalBearImg from '../assets/daily-goal-bear.png'
 import { Sparkles, Plus, X, Search, SlidersHorizontal, User } from 'lucide-react'
 
 const DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-const DATES = ['13 May', '14 May', '15 May', '16 May', '17 May', '18 May', '19 May']
 
 function formatTimeOnly(val) {
   const [hh, mm] = val.split(':')
@@ -47,6 +46,25 @@ function getSubjectProps(catId) {
 }
 
 export default function TimeTableView({ onBack }) {
+  const { currentDayIndex, DATES } = useMemo(() => {
+    const d = new Date()
+    const day = d.getDay()
+    const currentDayIndex = day === 0 ? 6 : day - 1
+    
+    const monday = new Date(d)
+    monday.setDate(d.getDate() - currentDayIndex)
+    
+    const dates = Array.from({ length: 7 }).map((_, i) => {
+      const date = new Date(monday)
+      date.setDate(monday.getDate() + i)
+      const dayNum = date.getDate()
+      const monthStr = date.toLocaleString('en-US', { month: 'short' })
+      return `${dayNum} ${monthStr}`
+    })
+    return { currentDayIndex, DATES: dates }
+  }, [])
+
+  const [selectedDay, setSelectedDay] = useState(currentDayIndex)
   const [timetable, setTimetable] = useState([])
   const [modalOpen, setModalOpen] = useState(false)
   const [categories, setCategories] = useState([])
@@ -149,11 +167,11 @@ export default function TimeTableView({ onBack }) {
       <div className="flex-1 overflow-hidden flex flex-col relative px-4 pb-2">
         <div className="bg-white rounded-[24px] shadow-sm border border-slate-100 mb-6 flex justify-between p-2">
           {DAYS.map((day, dIdx) => {
-            const isMon = dIdx === 0
+            const isSelected = dIdx === selectedDay
             return (
-              <div key={day} className={`flex flex-col items-center justify-center px-4 py-2.5 rounded-[18px] transition-all ${isMon ? 'bg-[#8B7CF6] shadow-md' : 'text-slate-500'}`}>
-                <span className={`text-[13px] font-bold ${isMon ? 'text-white' : 'text-slate-700'}`}>{day}</span>
-                <span className={`text-[11px] font-medium ${isMon ? 'text-white/80' : 'text-slate-400'}`}>{DATES[dIdx]}</span>
+              <div key={day} onClick={() => setSelectedDay(dIdx)} className={`cursor-pointer flex flex-col items-center justify-center px-4 py-2.5 rounded-[18px] transition-all ${isSelected ? 'bg-[#8B7CF6] shadow-md' : 'text-slate-500 hover:bg-slate-50'}`}>
+                <span className={`text-[13px] font-bold ${isSelected ? 'text-white' : 'text-slate-700'}`}>{day}</span>
+                <span className={`text-[11px] font-medium ${isSelected ? 'text-white/80' : 'text-slate-400'}`}>{DATES[dIdx]}</span>
               </div>
             )
           })}
@@ -161,16 +179,14 @@ export default function TimeTableView({ onBack }) {
 
         <div className="bg-white rounded-[28px] shadow-sm border border-slate-100 flex-1 overflow-hidden flex flex-col relative">
           <div className="flex-1 overflow-x-auto hide-scrollbar relative">
-            <div className="min-w-[900px] pb-6">
+            <div className="min-w-full pb-6">
               <div className="flex border-b border-slate-100 sticky top-0 bg-white z-20">
                 <div className="w-[85px] shrink-0 sticky left-0 bg-white z-30 border-r border-slate-100/50 flex items-center justify-center py-4">
                   <span className="text-[12px] font-medium text-slate-400">Time</span>
                 </div>
-                {DAYS.map((day) => (
-                  <div key={day} className="flex-1 min-w-[110px] py-4 flex items-center justify-center border-r border-transparent">
-                    <span className={`text-[14px] font-bold ${day === 'Sat' ? 'text-blue-400' : day === 'Sun' ? 'text-rose-400' : 'text-[#1E293B]'}`}>{day}</span>
-                  </div>
-                ))}
+                <div className="flex-1 min-w-[110px] py-4 flex items-center justify-center border-r border-transparent">
+                  <span className={`text-[14px] font-bold ${selectedDay === 5 ? 'text-blue-400' : selectedDay === 6 ? 'text-rose-400' : 'text-[#1E293B]'}`}>{DAYS[selectedDay]}</span>
+                </div>
               </div>
 
               <div className="flex flex-col">
@@ -199,7 +215,7 @@ export default function TimeTableView({ onBack }) {
                                 <span className="text-[13px] font-bold text-slate-700">Break Time</span>
                               </div>
                               <span className="text-[11px] font-medium text-slate-400 flex items-center gap-1">
-                                Take a short break and refresh your mind <NotoEmoji code="2601" className="w-3.5 h-3.5" />
+                                Take a short break <NotoEmoji code="2601" className="w-3.5 h-3.5" />
                               </span>
                            </div>
                            {breakBlock && (
@@ -209,12 +225,12 @@ export default function TimeTableView({ onBack }) {
                            )}
                         </div>
                       ) : (
-                        DAYS.map((day, dIdx) => {
-                          const block = blocksInRow.find(b => b.dayIndex === dIdx)
+                        (() => {
+                          const block = blocksInRow.find(b => b.dayIndex === selectedDay)
                           if (!block) {
                             return (
-                              <div key={dIdx} className="flex-1 min-w-[110px] p-2 border-r border-slate-50/50 relative group">
-                                <button onClick={() => setInlineSelector({ dayIndex: dIdx, start: range.start, end: range.end })} className="w-full h-full rounded-[16px] border-2 border-dashed border-slate-100 bg-slate-50/50 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all hover:bg-slate-50 hover:border-indigo-200">
+                              <div className="flex-1 min-w-[110px] p-2 border-r border-slate-50/50 relative group">
+                                <button onClick={() => setInlineSelector({ dayIndex: selectedDay, start: range.start, end: range.end })} className="w-full h-full rounded-[16px] border-2 border-dashed border-slate-100 bg-slate-50/50 flex flex-col items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-all hover:bg-slate-50 hover:border-indigo-200">
                                   <Plus className="w-6 h-6 text-indigo-400" />
                                   <span className="text-[10px] font-bold text-indigo-400">Add Subject</span>
                                 </button>
@@ -224,7 +240,7 @@ export default function TimeTableView({ onBack }) {
                           const { emoji, bg, text } = getSubjectProps(block.category)
                           const label = categories.find(c => c.id === block.category)?.label || 'Other'
                           return (
-                            <div key={dIdx} className="flex-1 min-w-[110px] p-1.5 border-r border-slate-50/50 relative group">
+                            <div className="flex-1 min-w-[110px] p-1.5 border-r border-slate-50/50 relative group">
                               <div className="w-full h-full rounded-[20px] p-3 flex flex-col items-center justify-center text-center gap-2.5 transition-all" style={{ backgroundColor: bg }}>
                                 <div className="absolute top-2.5 right-2.5">
                                   <Sparkles className="w-3.5 h-3.5 opacity-40" style={{ color: text }} />
@@ -239,7 +255,7 @@ export default function TimeTableView({ onBack }) {
                               </div>
                             </div>
                           )
-                        })
+                        })()
                       )}
                     </div>
                   )
