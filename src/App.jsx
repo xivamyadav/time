@@ -15,7 +15,7 @@ function uid() {
 
 export default function App() {
   const [tasks, setTasks] = useState(() => loadTasks())
-  const [activeTab, setActiveTab] = useState('today')
+  const [activeTab, setActiveTab] = useState(() => localStorage.getItem('activeTab') || 'today')
   const [dateKey, setDateKey] = useState(todayKey())
   const [modalOpen, setModalOpen] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
@@ -23,6 +23,10 @@ export default function App() {
   useEffect(() => {
     saveTasks(tasks)
   }, [tasks])
+
+  useEffect(() => {
+    localStorage.setItem('activeTab', activeTab)
+  }, [activeTab])
 
   const reload = useCallback(() => setTasks(loadTasks()), [])
 
